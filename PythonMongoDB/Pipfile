@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+fastapi = "*"
+pymongo = {extras= ["srv"]}
+mongoengine = "*"
+uvicorn = "*"
+pydantic = {extras = ["dotenv"], version = "*"}
+requests = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.8"

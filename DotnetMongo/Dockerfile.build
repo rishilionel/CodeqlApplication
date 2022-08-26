@@ -1,0 +1,23 @@
+FROM mcr.microsoft.com/dotnet/aspnet:3.1 AS base
+WORKDIR /app
+EXPOSE 80
+
+FROM mcr.microsoft.com/dotnet/sdk:3.1 AS build
+WORKDIR /src
+COPY ["Code/DotnetMongo.Api/DotnetMongo.Api.csproj", "Code/DotnetMongo.Api/"]
+COPY ["Code/DotnetMongo.Business/DotnetMongo.Business.csproj", "Code/DotnetMongo.Business/"]
+COPY ["Code/DotnetMongo.Data/DotnetMongo.Data.csproj", "Code/DotnetMongo.Data/"]
+COPY ["Code/DotnetMongo.Entities/DotnetMongo.Entities.csproj", "Code/DotnetMongo.Entities/"]
+COPY ["Code/DotnetMongo.Test.Api/DotnetMongo.Test.Api.csproj", "Code/DotnetMongo.Test.Api/"]
+COPY ["Code/DotnetMongo.Test.Business/DotnetMongo.Test.Business.csproj", "Code/DotnetMongo.Test.Business/"]
+RUN dotnet restore "Code/DotnetMongo.Api/DotnetMongo.Api.csproj"
+COPY . .
+WORKDIR "/src/Code/DotnetMongo.Api"
+RUN dotnet build "DotnetMongo.Api.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "DotnetMongo.Api.csproj" -c Release -o /app/publish
+
+WORKDIR /src
+RUN dotnet test --results-directory /testresults --logger "trx;LogFileName=testresults.Api.trx" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=/testresults/coverage/ /p:MergeWith=/testresults/coverage/coverage.json "Code/DotnetMongo.Test.Api/DotnetMongo.Test.Api.csproj"
+RUN dotnet test --results-directory /testresults --logger "trx;LogFileName=testresults.Api.trx" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=/testresults/coverage/ /p:MergeWith=/testresults/coverage/coverage.json "Code/DotnetMongo.Test.Business/DotnetMongo.Test.Business.csproj"

@@ -1,0 +1,15 @@
+<mat-card class="w-100">
+  <mat-card-content>
+    <h4 class="mb-56">Edit Form</h4>
+    <form [formGroup]="form" (ngSubmit)="edit()">
+      <mat-form-field class="w-100 fs-16" appearance="outline">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="Name" [(ngModel)]="data.Name" />
+        <mat-error *ngIf="handleError('Name', 'required')">
+          This field is required
+        </mat-error>
+      </mat-form-field>
+      <button mat-raised-button color="primary">Edit</button>
+    </form>
+  </mat-card-content>
+</mat-card>
